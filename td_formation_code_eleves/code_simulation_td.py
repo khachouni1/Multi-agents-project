@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 
 # number of robots
 # -----------------
-nbOfRobots = 4
+nbOfRobots = 2
 
 # dynamics of robots
 # -------------------
@@ -43,8 +43,8 @@ robotDynamics = 'singleIntegrator2D'    # use 'signleIntegrator2D' or 'unicycle'
 #initPositions = 20*np.random.rand(nbOfRobots,2)-10  # random init btw -10, +10
 
 # ... initial positions defined from data    (dimension: nb of agents  x  2)
-initPositions = np.array([[ -7, -9, -7, -9],       # x-coordinates (m)
-                          [1, 1, -1, -1]]).T   # y-coordinates (m)
+initPositions = np.array([[- 6, - 10],       # x-coordinates (m)
+                          [- 6, - 10]]).T   # y-coordinates (m)
 
 
 # ... initial orientation angles and poses (USED FOR UNICYCLE DYNAMICS ONLY)
@@ -66,7 +66,7 @@ else:
 Ts = 0.01
 
 # create simulation
-simulation = FleetSimulation(fleet, t0=0.0, tf=10.0, dt=Ts)
+simulation = FleetSimulation(fleet, t0=0.0, tf=400.0, dt=Ts)
 
    
 # simulation loop

@@ -31,6 +31,14 @@ import math
 global firstCall   # this variable can be used to check the first call ever of a function
 firstCall = True
 
+global a_visiter
+a_visiter = 0
+
+global Plein
+Plein = True
+
+global nbr_aller_retour
+nbr_aller_retour = 0
 
 
 # =============================================================================
@@ -47,6 +55,10 @@ def formation(t, robotNo, robots_poses):
     # global toto
     # toto = toto +1
     global firstCall
+    global a_visiter
+    global Plein
+    global nbr_aller_retour
+
     
     
     
@@ -67,10 +79,11 @@ def formation(t, robotNo, robots_poses):
     # adjacencdy matrix of communication graph
     # -----------------------------------------
     A= np.ones((N, N)) - np.eye(N)
+
+    A[0, 1] = 0
     
     if (firstCall):  # print information (only once)
         print(A)
-        
         
         firstCall = False
     
@@ -79,34 +92,41 @@ def formation(t, robotNo, robots_poses):
     
     # initialize control input vector
     ui = np.zeros(2)
+    kp = 0.1
+    kp2 = 0.2
     
-    
+    # Points à visiter pour le camion
+
+    visit = np.array([[- 6, 6], [6, 6], [6, - 6], [- 6, - 6]])
+    origin_drone = [- 10, - 10]
+
+
+
     # ===================== COMPUTATION OF ui =================================
         
-    k_L = 1
-    k_F = 5
-    x_star_0_dot = 0
-    r_dot = 0
 
-    if robots_poses[0, 0] < -2.5:
-        x_ref = np.array([-2.5, 0])
-        r = np.array([[0,0],[1, 0],[2, 0],[-1, 0]])
-    if robots_poses[0, 0] < 2.5 and robots_poses[0, 0] > -2.5:
-        x_ref = np.array([7.5, 0])
-        r = np.array([[0,0],[1, 0],[2, 0],[-1, 0]])
-    else:
-        x_ref = np.array([7.5, -1])
-        r = np.array([[0,0],[0, 2],[1, 1],[- 1, 1]])
-
-
-    #r = np.array([[-0.5*(j+1),-0.5*(j+1)] for j in range(10)])
-    u0 = -k_L*(x[i]-x_ref) + x_star_0_dot
+    # Camion
     if i == 0:
-        # leader
-        ui = u0
+        if math.dist(x[i], visit[a_visiter]) < 0.05:
+            a_visiter = (a_visiter + 1) % 4
+        ui = ui - kp*(x[i] - visit[a_visiter])
+    
+    # Drone
     else:
-        # follower
-        ui = -k_F*((x[i]-x[0]) - r[i]) + r_dot + u0
+        if nbr_aller_retour < 3:
+            if Plein:
+                if math.dist(x[i], x[0]) < 0.1:
+                    Plein = False
+            else:
+                if math.dist(x[i], origin_drone) < 0.1:
+                    Plein = True
+                    nbr_aller_retour += 1    
+            if Plein:
+                ui = ui - kp2*(x[i] - x[0])
+            else:
+                ui = ui - kp2*(x[i] - origin_drone)
+
+        
     
     # =========================================================================
     
