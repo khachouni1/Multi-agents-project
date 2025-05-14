@@ -31,13 +31,13 @@ import math
 global firstCall   # this variable can be used to check the first call ever of a function
 firstCall = True
 
-global a_visiter
+global a_visiter   # Variable qui indice les points à visiter par le camion
 a_visiter = 0
 
-global Plein
+global Plein       # Si le drone est plein, il rejoint le camion, s'il est vide, il rejoint le point de ravitaillement
 Plein = True
 
-global nbr_aller_retour
+global nbr_aller_retour # Compte le nombre d'aller retour que réalise le drone
 nbr_aller_retour = 0
 
 
@@ -97,8 +97,8 @@ def formation(t, robotNo, robots_poses):
     
     # Points à visiter pour le camion
 
-    visit = np.array([[- 6, 6], [6, 6], [6, - 6], [- 6, - 6]])
-    origin_drone = [- 10, - 10]
+    visit = np.array([[- 6, 6], [6, 6], [6, - 6], [- 6, - 6]])  # Points que le camion doit visiter
+    origin_drone = [- 10, - 10]                                 # Points de ravitaillement du drone
 
 
 
@@ -107,7 +107,7 @@ def formation(t, robotNo, robots_poses):
 
     # Camion
     if i == 0:
-        if math.dist(x[i], visit[a_visiter]) < 0.05:
+        if math.dist(x[i], visit[a_visiter]) < 0.05:    # Si la distance entre le point fcitf et le camion assez faible, on change de point
             a_visiter = (a_visiter + 1) % 4
         ui = ui - kp*(x[i] - visit[a_visiter])
     
@@ -115,16 +115,16 @@ def formation(t, robotNo, robots_poses):
     else:
         if nbr_aller_retour < 3:
             if Plein:
-                if math.dist(x[i], x[0]) < 0.1:
+                if math.dist(x[i], x[0]) < 0.1:         # Si la distance entre le drone et le camion est assez faible, il se vide
                     Plein = False
             else:
-                if math.dist(x[i], origin_drone) < 0.1:
+                if math.dist(x[i], origin_drone) < 0.1: # Si la distance entre le drone et le point de ravitaillement est assez faible, il se remplit
                     Plein = True
                     nbr_aller_retour += 1    
             if Plein:
-                ui = ui - kp2*(x[i] - x[0])
+                ui = ui - kp2*(x[i] - x[0])             # Si le drone est plein, il rejoint le camion
             else:
-                ui = ui - kp2*(x[i] - origin_drone)
+                ui = ui - kp2*(x[i] - origin_drone)     # Si le drone est vide, il rejoint le point de ravitaillement
 
         
     
