@@ -292,7 +292,53 @@ class FleetSimulation:
         graph.grid(True)
         graph.set_xlabel('x (m)')
         graph.set_ylabel('y (m)')
+
+    from mpl_toolkits.mplot3d import Axes3D  
+    def plotXYZ(self, figNo=100, steps=None, links=False):
+        """
+        Trace la trajectoire 3D (x, y, z) de tous les robots,
+        en s'inspirant de la structure de plotXY.
         
+        Attention : chaque robot doit stocker x,y,z dans self.robotSimulation[i].state[:,0:3]
+        """
+
+        colorList = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
+
+        fig = plt.figure(figNo)
+        ax = fig.add_subplot(111, projection='3d')
+
+        for i in range(self.nbOfRobots):
+            i_color = np.mod(i, len(colorList))
+            if steps is None:
+                xs = self.robotSimulation[i].state[:,0]
+                ys = self.robotSimulation[i].state[:,1]
+                zs = self.robotSimulation[i].state[:,2]
+            else:
+                xs = self.robotSimulation[i].state[::steps,0]
+                ys = self.robotSimulation[i].state[::steps,1]
+                zs = self.robotSimulation[i].state[::steps,2]
+
+            ax.plot(xs, ys, zs, color=colorList[i_color])
+            ax.scatter(xs[0], ys[0], zs[0], marker='+', color=colorList[i_color])  # position initiale
+
+        if links and steps is not None:
+            for tt in range(0, int(self.t.shape[0]))[::steps]:
+                for i in range(self.nbOfRobots):
+                    i_color = np.mod(i, len(colorList))
+                    for j in range(self.nbOfRobots):
+                        xi = self.robotSimulation[i].state[tt,0]
+                        yi = self.robotSimulation[i].state[tt,1]
+                        zi = self.robotSimulation[i].state[tt,2]
+                        xj = self.robotSimulation[j].state[tt,0]
+                        yj = self.robotSimulation[j].state[tt,1]
+                        zj = self.robotSimulation[j].state[tt,2]
+                        ax.plot([xi, xj], [yi, yj], [zi, zj], color='grey', alpha=0.3, linestyle='--')
+                        ax.scatter(xi, yi, zi, marker='8', s=25, color=colorList[i_color])
+
+        ax.set_xlabel('X (m)')
+        ax.set_ylabel('Y (m)')
+        ax.set_zlabel('Z (m)')
+        ax.grid(True)    
         
     # -----------------------------------------------------------------------------------
     def plotState(self, figNo=1,  xmin=-10, xmax=10, ymin=-10, ymax=10):

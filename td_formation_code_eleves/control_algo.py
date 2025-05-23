@@ -53,17 +53,18 @@ def formation(t, robotNo, robots_poses):
 
     N = robots_poses.shape[0]  # nombre total de robots
     i = robotNo
-    x = robots_poses[:, :2]
+    x = robots_poses
 
     vx = 0.
     vy = 0.
-    ui = np.zeros(2)
+    vz = 0.
+    ui = np.zeros(3)
 
     kp = 0.1
     kp2 = 0.2
 
-    visit = np.array([[-6, 6], [6, 6], [6, -6], [-6, -6]])  # points du camion
-    origin_drone = np.array([[-10, -10], [10, -10], [0, 10]])  # 3 points de ravitaillement
+    visit = np.array([[-6, 6, 0], [6, 6, 0], [6, -6, 0], [-6, -6, 0]])  # points du camion
+    origin_drone = np.array([[-10, -10, 10], [10, -10, 10], [0, 10, 10]])  # 3 points de ravitaillement
 
     if firstCall:
         print("Première exécution. Adjacency matrix non utilisée ici.")
@@ -108,8 +109,11 @@ def formation(t, robotNo, robots_poses):
             # Drone inactif : reste au point de ravitaillement
             ui = -kp2 * (x[i] - supply_target)
 
-    return ui[0], ui[1]
+    vx = ui[0]
+    vy = ui[1]
+    vz = ui[2]
 
+    return vx, vy, vz
 
 
 # =============================================================================

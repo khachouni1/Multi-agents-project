@@ -45,14 +45,14 @@ class Robot:
         
         if (dynamics == 'singleIntegrator2D'):
             # state
-            self.stateDim = 2
+            self.stateDim = 3
             if (len(initState)==0):
-                self.state = np.array([0., 0.]) # x,y
+                self.state = np.array([0., 0., 0.]) # x,y
             else:
                 self.state = initState
             # control
-            self.ctrlDim = 2
-            self.ctrl = np.array([0.,0.]) # vx, vy
+            self.ctrlDim = 3
+            self.ctrl = np.array([0.,0., 0.]) # vx, vy
             
             
         if (dynamics == 'unicycle'):

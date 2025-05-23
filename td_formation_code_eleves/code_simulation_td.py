@@ -43,9 +43,9 @@ robotDynamics = 'singleIntegrator2D'    # use 'signleIntegrator2D' or 'unicycle'
 
 # ... initial positions defined from data    (dimension: nb of agents  x  2)
 initPositions = np.array([
-    [-6, -10],   # camion
-    [-10, -10],  # drone 1
-    [10, -10]    # drone 2
+    [-6, -10, 0],   # camion
+    [-10, -10, 10],  # drone 1
+    [10, -10, 10]    # drone 2
 ])
 
 
@@ -82,12 +82,12 @@ for t in simulation.t:
     # compute control input of each robot
     for robotNo in range(fleet.nbOfRobots):
         
-        vx, vy = control_algo.formation(t, robotNo, robots_poses)     # <= MODIFY CONTROL LAW IN "control_algo.py"
+        vx, vy, vz = control_algo.formation(t, robotNo, robots_poses)     # <= MODIFY CONTROL LAW IN "control_algo.py"
         
         if (robotDynamics=='singleIntegrator2D'):
-            fleet.robot[robotNo].ctrl = np.array([vx, vy]) 
+            fleet.robot[robotNo].ctrl = np.array([vx, vy, vz]) 
         else:
-            fleet.robot[robotNo].ctrl = si_to_uni(vx, vy, robots_poses[robotNo,2], kp=10.) 
+            fleet.robot[robotNo].ctrl = si_to_uni(vx, vy, vz, robots_poses[robotNo,2], kp=10.) 
     
     
     # update data of simulation 
@@ -101,7 +101,7 @@ for t in simulation.t:
 #simulation.animation(figNo=1, pause=0.00001, robot_scale=1.0)   
 
 # plot 2D trajectories
-simulation.plotXY(figNo=2)
+simulation.plotXYZ(figNo=2)
 # plot on current figure the mission background for Question 1.6
 #plot_mission_background()
 
