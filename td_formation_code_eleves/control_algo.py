@@ -122,9 +122,9 @@ def formation(t, robotNo, robots_poses):
                     Plein = True
                     nbr_aller_retour += 1    
             if Plein:
-                ui = ui - kp2*(x[i] - x[0])             # Si le drone est plein, il rejoint le camion
+                ui = ui - kp2*(x[i] - x[0]) + repulsion(x[i], [0, 0])             # Si le drone est plein, il rejoint le camion
             else:
-                ui = ui - kp2*(x[i] - origin_drone)     # Si le drone est vide, il rejoint le point de ravitaillement
+                ui = ui - kp2*(x[i] - origin_drone) + repulsion(x[i], [0, 0])     # Si le drone est vide, il rejoint le point de ravitaillement
 
         
     
@@ -168,3 +168,12 @@ def my_control_law(t, robotNo, robots_poses):
     return vx, vy
 # =============================================================================
 
+def repulsion(pos_self, pos_other, threshold=3.0, gain=10.0):
+    direction = pos_self - pos_other
+    distance = np.linalg.norm(direction)
+    
+    if distance < threshold and distance > 1e-6:
+        force = gain * (1.0 / distance - 1.0 / threshold) * (direction / distance)
+        return force
+    else:
+        return np.zeros_like(pos_self)

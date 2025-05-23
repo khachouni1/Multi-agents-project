@@ -94,7 +94,7 @@ for t in simulation.t:
 
 
 # plot animation
-#simulation.animation(figNo=1, pause=0.00001, robot_scale=1.0)   
+#simulation.animation(figNo=1, pause=0.0001, robot_scale=1.0)   
 
 # plot 2D trajectories
 simulation.plotXY(figNo=2)
@@ -113,4 +113,4 @@ simulation.plotCtrl(figNo=6)
 # plot on current figure the mission background for Question 1.6
 #plot_mission_background()
 
-plt.show(block=True)
+plt.show()
