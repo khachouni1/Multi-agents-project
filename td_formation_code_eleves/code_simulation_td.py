@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 @author: Sylvain Bertrand, 2023
 
@@ -29,7 +28,7 @@ import matplotlib.pyplot as plt
 
 # number of robots
 # -----------------
-nbOfRobots = 2
+nbOfRobots = 3
 
 # dynamics of robots
 # -------------------
@@ -43,8 +42,13 @@ robotDynamics = 'singleIntegrator2D'    # use 'signleIntegrator2D' or 'unicycle'
 #initPositions = 20*np.random.rand(nbOfRobots,2)-10  # random init btw -10, +10
 
 # ... initial positions defined from data    (dimension: nb of agents  x  2)
-initPositions = np.array([[- 6, - 10],       # x-coordinates (m)
-                          [- 6, - 10]]).T   # y-coordinates (m)
+initPositions = np.array([
+    [-6, -10],   # camion
+    [-10, -10],  # drone 1
+    [10, -10]    # drone 2
+])
+
+
 
 
 # ... initial orientation angles and poses (USED FOR UNICYCLE DYNAMICS ONLY)
@@ -94,7 +98,7 @@ for t in simulation.t:
 
 
 # plot animation
-#simulation.animation(figNo=1, pause=0.0001, robot_scale=1.0)   
+#simulation.animation(figNo=1, pause=0.00001, robot_scale=1.0)   
 
 # plot 2D trajectories
 simulation.plotXY(figNo=2)
@@ -113,4 +117,4 @@ simulation.plotCtrl(figNo=6)
 # plot on current figure the mission background for Question 1.6
 #plot_mission_background()
 
-plt.show()
+plt.show(block=True)
