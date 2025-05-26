@@ -99,6 +99,7 @@ for t in simulation.t:
 
 # plot animation
 #simulation.animation(figNo=1, pause=0.00001, robot_scale=1.0)   
+simulation.animation3D(figNo=10, pause=0.0001, robot_scale=1.0, step=20)
 
 # plot 2D trajectories
 simulation.plotXYZ(figNo=2)

@@ -340,6 +340,53 @@ class FleetSimulation:
         ax.set_zlabel('Z (m)')
         ax.grid(True)    
         
+        from mpl_toolkits.mplot3d import Axes3D  # nécessaire pour activer le mode 3D
+
+    def animation3D(self, figNo=1, xmin=-10, xmax=10, ymin=-10, ymax=10, zmin=-10, zmax=10, robot_scale=0.1, pause=0.0001, step=1):
+        fig = plt.figure(figNo)
+        ax = fig.add_subplot(111, projection='3d')
+
+        global stop_anim
+        stop_anim = False
+
+        def on_escape(event):
+            global stop_anim
+            if event.key == 'escape':
+                stop_anim = True
+
+        colorList = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
+
+        i = 0
+        while (i < len(self.t)) and (not stop_anim):
+            ax.cla()
+
+            for i_rob in range(self.nbOfRobots):
+                i_color = np.mod(i_rob, len(colorList))
+
+                xs = self.robotSimulation[i_rob].state[:i+1, 0]
+                ys = self.robotSimulation[i_rob].state[:i+1, 1]
+                zs = self.robotSimulation[i_rob].state[:i+1, 2]
+
+                x = self.robotSimulation[i_rob].state[i, 0]
+                y = self.robotSimulation[i_rob].state[i, 1]
+                z = self.robotSimulation[i_rob].state[i, 2]
+
+                ax.plot(xs, ys, zs, color=colorList[i_color])
+                ax.scatter(x, y, z, color=colorList[i_color], marker='o')
+
+            ax.set_xlim3d(xmin, xmax)
+            ax.set_ylim3d(ymin, ymax)
+            ax.set_zlim3d(zmin, zmax)
+            ax.set_xlabel("x (m)")
+            ax.set_ylabel("y (m)")
+            ax.set_zlabel("z (m)")
+            ax.set_title(f"(press Escape to stop animation)\nTime: {round(self.t[i], 2)} s")
+
+            fig.canvas.mpl_connect('key_release_event', on_escape)
+
+            plt.pause(pause)
+            i += step
+        
     # -----------------------------------------------------------------------------------
     def plotState(self, figNo=1,  xmin=-10, xmax=10, ymin=-10, ymax=10):
     # -----------------------------------------------------------------------------------
