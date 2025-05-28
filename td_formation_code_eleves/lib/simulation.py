@@ -387,14 +387,14 @@ class FleetSimulation:
             fig.canvas.mpl_connect('key_release_event', on_escape)
 
             plt.pause(pause)
-            plt.draw()
-            image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
-            image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-            frames.append(image)
+#            plt.draw()
+#            image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
+#            image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+#            frames.append(image)
             i += step
-        print("Frame", i, "of", len(self.t))
-        imageio.mimsave("simulation.gif", frames, fps=int(1/pause))
-        print("GIF saved as 'simulation.gif'")
+#        print("Frame", i, "of", len(self.t))
+#        imageio.mimsave("simulation.gif", frames, fps=int(1/pause))
+#        print("GIF saved as 'simulation.gif'")
         
     # -----------------------------------------------------------------------------------
     def plotState(self, figNo=1,  xmin=-10, xmax=10, ymin=-10, ymax=10):

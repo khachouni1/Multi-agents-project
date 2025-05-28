@@ -39,6 +39,9 @@ Plein = True
 global nbr_aller_retour # Compte le nombre d'aller retour que réalise le drone
 nbr_aller_retour = 0
 
+global Aterrissage
+Aterrissage = False
+
 
 # =============================================================================
 
@@ -49,7 +52,7 @@ nbr_aller_retour = 0
 # =============================================================================
 # =============================================================================
 def formation(t, robotNo, robots_poses):
-    global firstCall, a_visiter, Plein, nbr_aller_retour
+    global firstCall, a_visiter, Plein, nbr_aller_retour, Aterrissage
 
     N = robots_poses.shape[0]  # nombre total de robots
     i = robotNo
@@ -72,14 +75,18 @@ def formation(t, robotNo, robots_poses):
 
     # ---------------- CAMION ----------------
     if i == 0:
-        if np.linalg.norm(x[i] - visit[a_visiter]) < 0.05:
-            a_visiter = (a_visiter + 1) % 4
-        ui = -kp * (x[i] - visit[a_visiter])
+        if Plein and Aterrissage:
+            ui = [0, 0, 0]
+        else:
+            if np.linalg.norm(x[i] - visit[a_visiter]) < 0.05:
+                a_visiter = (a_visiter + 1) % 4
+            ui = -kp * (x[i] - visit[a_visiter])
 
     # ---------------- DRONES ----------------
     else:
         # Calculer la distance du drone courant au camion
-        distance_to_camion = np.linalg.norm(x[i] - x[0] - [0, 0, 1])
+        distance_to_camion = np.linalg.norm(x[i] - x[0])
+        distance_to_camion_top = np.linalg.norm(x[i] - x[0] - [0, 0, 1])
 
         # Identifier le drone le plus proche du camion
         drones_positions = x[1:]  # sans le camion
@@ -93,18 +100,34 @@ def formation(t, robotNo, robots_poses):
         if i == closest_drone_index:
             # Drone actif pour livraison
             if nbr_aller_retour < 3:
-                if Plein:
-                    if distance_to_camion < 0.1:
-                        Plein = False
+                if Aterrissage:
+                    if Plein:
+                        if distance_to_camion < 0.1:
+                            Plein = False
+                            Aterrissage = False
+                    else:
+                        if np.linalg.norm(x[i] - supply_target) < 0.1:
+                            Plein = True
+                            nbr_aller_retour += 1
+                            Aterrissage = False
                 else:
-                    if np.linalg.norm(x[i] - supply_target) < 0.1:
-                        Plein = True
-                        nbr_aller_retour += 1
+                    if Plein:
+                        if distance_to_camion_top < 0.1:
+                            Aterrissage = True
+                    else:
+                        if np.linalg.norm(x[i] - supply_target - [0, 0, 1]) < 0.1:
+                            Aterrissage = True
 
-                if Plein:
-                    ui = -kp2 * (x[i] - x[0] - [0, 0, 1]) + repulsion(x[i], x[0], threshold=1)
+                if Aterrissage:
+                    if Plein:
+                        ui = -kp2 * (x[i] - x[0])
+                    else:
+                        ui = -kp2 * (x[i] - supply_target) + repulsion(x[i], x[0], threshold=1)
                 else:
-                    ui = -kp2 * (x[i] - supply_target) + repulsion(x[i], x[0], threshold=1)
+                    if Plein:
+                        ui = -kp2 * (x[i] - x[0] - [0, 0, 1]) + repulsion(x[i], x[0], threshold=1)
+                    else:
+                        ui = -kp2 * (x[i] - supply_target - [0, 0, 1]) + repulsion(x[i], x[0], threshold=1)
         else:
             # Drone inactif : reste au point de ravitaillement
             ui = -kp2 * (x[i] - supply_target)
