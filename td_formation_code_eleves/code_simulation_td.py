@@ -70,7 +70,7 @@ else:
 Ts = 0.01
 
 # create simulation
-simulation = FleetSimulation(fleet, t0=0.0, tf=400.0, dt=Ts)
+simulation = FleetSimulation(fleet, t0=0.0, tf=200.0, dt=Ts)
 
    
 # simulation loop

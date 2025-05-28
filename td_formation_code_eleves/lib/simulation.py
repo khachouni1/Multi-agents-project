@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import lib.robot as robot_lib   # use this line for usage of this module by scripts from parent directory
+import imageio
 #import robot as robot_lib      # use this line for usage of this module within its directory
 
 
@@ -357,6 +358,7 @@ class FleetSimulation:
         colorList = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
 
         i = 0
+        frames = []
         while (i < len(self.t)) and (not stop_anim):
             ax.cla()
 
@@ -385,7 +387,14 @@ class FleetSimulation:
             fig.canvas.mpl_connect('key_release_event', on_escape)
 
             plt.pause(pause)
+            plt.draw()
+            image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
+            image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+            frames.append(image)
             i += step
+        print("Frame", i, "of", len(self.t))
+        imageio.mimsave("simulation.gif", frames, fps=int(1/pause))
+        print("GIF saved as 'simulation.gif'")
         
     # -----------------------------------------------------------------------------------
     def plotState(self, figNo=1,  xmin=-10, xmax=10, ymin=-10, ymax=10):
@@ -478,6 +487,7 @@ class FleetSimulation:
         colorList = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
       
         i=0
+        frames = [] 
         while (i<len(self.t))&(stop_anim==False):
             # clear plot
             plt.cla()
@@ -501,7 +511,7 @@ class FleetSimulation:
                 # robot and trajectory
                 plot_robot(x, y, theta, x_traj, y_traj, scale=robot_scale, color=colorList[i_color])
 
-
+            print("test")
             plt.xlabel("x (m)")
             plt.ylabel("y (m)")
             plt.grid(True)
@@ -514,7 +524,15 @@ class FleetSimulation:
             
             plt.pause(pause)
             
+            plt.draw()
+            image = np.frombuffer(plt.gcf().canvas.tostring_rgb(), dtype='uint8')
+            image = image.reshape(plt.gcf().canvas.get_width_height()[::-1] + (3,))
+            frames.append(image)
+            
             i=i+1
+        print("Frame", i, "of", len(self.t), "at time", t)
+        imageio.mimsave("mongif.gif", frames, fps=int(1/pause))
+        print("GIF saved as 'mongif.gif'")
     '''
     # -----------------------------------------------------------------------------------------
     def plotFleet(self, figNo = 1, xmin=-10, xmax=10, ymin=-10, ymax=10, mod=None, links=True):
