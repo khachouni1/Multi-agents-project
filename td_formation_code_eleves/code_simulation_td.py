@@ -44,8 +44,8 @@ robotDynamics = 'singleIntegrator2D'    # use 'signleIntegrator2D' or 'unicycle'
 # ... initial positions defined from data    (dimension: nb of agents  x  2)
 initPositions = np.array([
     [-6, -10, 0],   # camion
-    [-10, -10, 10],  # drone 1
-    [10, -10, 10]    # drone 2
+    [-10, -10, 0],  # drone 1
+    [10, -10, 0]    # drone 2
 ])
 
 

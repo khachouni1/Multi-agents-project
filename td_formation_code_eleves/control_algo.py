@@ -64,7 +64,7 @@ def formation(t, robotNo, robots_poses):
     kp2 = 0.2
 
     visit = np.array([[-6, 6, 0], [6, 6, 0], [6, -6, 0], [-6, -6, 0]])  # points du camion
-    origin_drone = np.array([[-10, -10, 10], [10, -10, 10], [0, 10, 10]])  # 3 points de ravitaillement
+    origin_drone = np.array([[-10, -10, 0], [10, -10, 0], [0, 10, 0]])  # 3 points de ravitaillement
 
     if firstCall:
         print("Première exécution. Adjacency matrix non utilisée ici.")
@@ -79,11 +79,11 @@ def formation(t, robotNo, robots_poses):
     # ---------------- DRONES ----------------
     else:
         # Calculer la distance du drone courant au camion
-        distance_to_camion = np.linalg.norm(x[i] - x[0])
+        distance_to_camion = np.linalg.norm(x[i] - x[0] - [0, 0, 1])
 
         # Identifier le drone le plus proche du camion
         drones_positions = x[1:]  # sans le camion
-        distances = np.linalg.norm(drones_positions - x[0], axis=1)
+        distances = np.linalg.norm(drones_positions - x[0] - [0, 0, 1], axis=1)
         closest_drone_index = np.argmin(distances) + 1  # ajouter 1 car indexé à partir de 1
 
         # Calcul du point de ravitaillement le plus proche
@@ -102,9 +102,9 @@ def formation(t, robotNo, robots_poses):
                         nbr_aller_retour += 1
 
                 if Plein:
-                    ui = -kp2 * (x[i] - x[0])
+                    ui = -kp2 * (x[i] - x[0] - [0, 0, 1]) + repulsion(x[i], x[0], threshold=1)
                 else:
-                    ui = -kp2 * (x[i] - supply_target)
+                    ui = -kp2 * (x[i] - supply_target) + repulsion(x[i], x[0], threshold=1)
         else:
             # Drone inactif : reste au point de ravitaillement
             ui = -kp2 * (x[i] - supply_target)
